@@ -8,6 +8,7 @@ import BlurFade from "../components/magicui/BlurFade";
 import PulsatingButton from "../components/magicui/PulsatingButton";
 import { useAddress } from "@thirdweb-dev/react";
 import UserOnboardingFlow from '../components/UserOnboardingFlow';
+import Particles from "../components/magicui/Particles";
 
 const RestaurantCard = ({ name, image, category }) => (
   <div className="bg-white bg-opacity-20 p-4 rounded-lg shadow-lg text-center transform hover:scale-105 transition duration-300">
@@ -76,7 +77,10 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="relative min-h-screen flex flex-col bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+      {/* Add the Particles component */}
+      <Particles className="absolute inset-0" quantity={100} ease={80} color="#ffffff" />
+
       <Head>
         <title>JustETH - Blockchain Food Rating</title>
         <link rel="icon" href="/favicon.ico" />
