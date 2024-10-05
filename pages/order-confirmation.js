@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import { IDKitWidget } from '@worldcoin/idkit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Navbar from '../components/Navbar'; // Import the Navbar component
-import Footer from '../components/Footer'; // Import the Footer component
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function OrderConfirmation() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function OrderConfirmation() {
 
     console.log('Submitting review:', { review, rating });
     toast.success('Review submitted successfully!');
-    setTimeout(() => router.push('/'), 2000);
+    setTimeout(() => router.push('/reviews'), 1600); // Change delay to 1.6 seconds
   };
 
   const handleWorldIDVerification = () => {
@@ -30,9 +30,9 @@ export default function OrderConfirmation() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
-      <Navbar /> {/* Add the Navbar component */}
+      <Navbar />
       
-      <main className="flex-grow flex items-center justify-center pt-24 pb-12"> {/* Added padding for spacing */}
+      <main className="flex-grow flex items-center justify-center pt-24 pb-12">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
           <h1 className="text-2xl font-bold mb-4 text-gray-800">Thank you for your order!</h1>
           <p className="mb-4 text-gray-700">We hope you enjoy your meal. Would you like to leave a review?</p>
@@ -65,10 +65,10 @@ export default function OrderConfirmation() {
 
           <div className="mb-4">
             <IDKitWidget
-              action="review-submission"
+              action={process.env.NEXT_PUBLIC_WLD_ACTION || "food-rating"}
               signal="user-review"
               onSuccess={handleWorldIDVerification}
-              app_id="YOUR_WORLD_ID_APP_ID"
+              app_id={process.env.NEXT_PUBLIC_WLD_APP_ID}
             >
               {({ open }) => (
                 <button
@@ -97,7 +97,7 @@ export default function OrderConfirmation() {
       </main>
       
       <ToastContainer position="top-center" autoClose={2000} />
-      <Footer /> {/* Add the Footer component */}
+      <Footer />
     </div>
   );
 }

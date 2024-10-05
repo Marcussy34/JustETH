@@ -43,7 +43,7 @@ export default function PaymentPage() {
       toast.success("Payment successful!");
       setTimeout(() => {
         router.push('/order-confirmation');
-      }, 2000); // Redirect after 2 seconds
+      }, 1500); // Redirect after 1.5 seconds
     } catch (error) {
       console.error("Payment failed", error);
       setPaymentStatus('failed');
