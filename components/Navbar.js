@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { useTheme } from './ThemeProvider';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, User } from 'lucide-react'; // import the User icon
 import { useRouter } from 'next/router';
 
 export default function Navbar({ isWalletConnected }) {
@@ -55,6 +55,11 @@ export default function Navbar({ isWalletConnected }) {
             <ConnectWallet
               className={`text-white px-4 py-2 rounded-md ${scrollOpacity > 0.5 ? 'bg-pink-800 hover:bg-pink-900' : 'bg-pink-700 hover:bg-pink-800'} transition duration-300`}
             />
+            <Link href="/profile">
+              <button className="flex items-center p-2 rounded-full bg-pink-700 text-white hover:bg-pink-800 transition duration-300">
+                <User size={20} /> {/* Using User icon */}
+              </button>
+            </Link>
           </div>
         </div>
       </div>

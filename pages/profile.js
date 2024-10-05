@@ -100,7 +100,7 @@ const UserActivityTimeline = () => {
       <main className="flex-grow container mx-auto px-4 py-40">
         <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-            User Activity Timeline
+            User Profile
           </h1>
           {timeline.map((user, index) => (
             <div key={index} className="mb-8 p-4 bg-gray-100 rounded-lg">
