@@ -4,6 +4,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Navbar from '../components/Navbar';
 import { ThemeProvider } from '../components/ThemeProvider';
 import '../styles/globals.css';
+import { ApolloClient, InMemoryCache,ApolloProvider } from '@apollo/client';
+
+const apolloClient = new ApolloClient({
+  uri: 'https://api.studio.thegraph.com/query/90400/food/version/latest',
+  cache: new InMemoryCache(),
+});
 
 function MyApp({ Component, pageProps }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -15,7 +21,9 @@ function MyApp({ Component, pageProps }) {
         queryClient={queryClient}
       >
         <ThemeProvider>
-          <WalletWrapper Component={Component} pageProps={pageProps} />
+          <ApolloProvider client={apolloClient}>
+            <WalletWrapper Component={Component} pageProps={pageProps} />
+          </ApolloProvider>
         </ThemeProvider>
       </ThirdwebProvider>
     </QueryClientProvider>
