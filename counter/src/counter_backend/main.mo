@@ -1,13 +1,13 @@
 import Array "mo:base/Array";
 import HashMap "mo:base/HashMap";
 import Iter "mo:base/Iter";
-import Nat "mo:base/Nat";
+import Float "mo:base/Float";
 import Text "mo:base/Text";
 
 actor FoodRating {
     public type Store = {
         name: Text;
-        rating: Nat;
+        rating: Float;
         imageUrl: Text;
     };
 
@@ -17,7 +17,7 @@ actor FoodRating {
     public func createStore(name : Text, imageUrl : Text) : async () {
         let newStore : Store = {
             name = name;
-            rating = 0;
+            rating = 0.0; // Default rating as Float
             imageUrl = imageUrl;
         };
         stores.put(name, newStore);
@@ -27,7 +27,7 @@ actor FoodRating {
         stores.get(name)
     };
 
-       public func updateStore(name : Text, newRating : Nat) : async () {
+    public func updateStore(name : Text, newRating : Float) : async () {
         switch (stores.get(name)) {
             case (null) {
                 // Store doesn't exist, do nothing

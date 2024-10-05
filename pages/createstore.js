@@ -9,7 +9,7 @@ import WordPullUp from "../components/magicui/WordPullUp";
 import BlurFade from "../components/magicui/BlurFade";
 
 const MAINNET_IC_URL = "https://ic0.app";  // Mainnet IC URL
-const CANISTER_ID = "6cuhh-6iaaa-aaaag-qm52q-cai";  // Replace with your mainnet canister ID
+const CANISTER_ID = "6mwkp-fyaaa-aaaag-qm53q-cai";  // Replace with your mainnet canister ID
 
 export default function CreateStore() {
   const [newStore, setNewStore] = useState({ name: '', imageUrl: '' });

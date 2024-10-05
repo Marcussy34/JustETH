@@ -6,7 +6,7 @@ import RateRestaurant from '../components/RateRestaurant';
 import Footer from '../components/Footer';
 
 const MAINNET_IC_URL = "https://ic0.app";  // Updated for IC mainnet
-const CANISTER_ID = "6cuhh-6iaaa-aaaag-qm52q-cai";  // Replace with your mainnet canister ID
+const CANISTER_ID = "6mwkp-fyaaa-aaaag-qm53q-cai";  // Replace with your mainnet canister ID
 
 export default function RateRestaurants({ isWalletConnected }) {
   const [stores, setStores] = useState([]);

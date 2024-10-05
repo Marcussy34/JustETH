@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const MAINNET_IC_URL = "https://ic0.app";
-const CANISTER_ID = "6cuhh-6iaaa-aaaag-qm52q-cai"; // Replace with your actual canister ID
+const CANISTER_ID = "6mwkp-fyaaa-aaaag-qm53q-cai"; // Replace with your actual canister ID
 
 const GET_REVIEWS = gql`
   query GetReviews {
@@ -63,6 +63,9 @@ export default function Reviews() {
   const initActor = async () => {
     try {
       const agent = new HttpAgent({ host: MAINNET_IC_URL });
+      // Note: For production on mainnet, you might not need to fetch the root key
+      // await agent.fetchRootKey();
+      
       const actor = Actor.createActor(idlFactory, {
         agent,
         canisterId: CANISTER_ID,
@@ -75,7 +78,7 @@ export default function Reviews() {
 
   const calculateAverageRating = (reviews) => {
     if (!reviews || reviews.length === 0) return 0;
-    const totalRating = reviews.reduce((sum, review) => sum + parseInt(review.rating), 0);
+    const totalRating = reviews.reduce((sum, review) => sum + parseFloat(review.rating), 0);
     return totalRating / reviews.length;
   };
 
@@ -86,29 +89,23 @@ export default function Reviews() {
       const newRating = isLike ? 5 : 1;
       
       // Add the new rating to the existing reviews
-      const updatedReviews = [...data.reviewSubmitteds, { rating: newRating }];
+      const updatedReviews = [...(data?.reviewSubmitteds || []), { rating: newRating }];
       const averageRating = calculateAverageRating(updatedReviews);
       
-      await foodRatingActor.updateStore("Delicious Food", Math.round(averageRating));
+      // Update the "Delicious Food" store rating with the precise float64 value
+      await foodRatingActor.updateStore("Delicious Food", averageRating);
+      
       refetch(); // Refetch the reviews to get the updated data
     } catch (err) {
       setActorError(`Failed to update rating: ${err.message}`);
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-red-500">
-      <p className="text-white text-2xl">Loading...</p>
-    </div>
-  );
-  
-  if (error || actorError) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-red-500">
-      <p className="text-white text-2xl">Error: {error ? error.message : actorError}</p>
-    </div>
-  );
+  // Handle loading and error states
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
-  const reviews = data.reviewSubmitteds;
+  const reviews = data?.reviewSubmitteds || [];
   const overallRating = calculateAverageRating(reviews);
 
   return (
@@ -119,23 +116,13 @@ export default function Reviews() {
           <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
             Delicious Food Reviews
           </h1>
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold">Overall Rating</h2>
-            <div className="flex justify-center mt-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span key={star} className={`text-3xl ${star <= Math.round(overallRating) ? 'text-yellow-500' : 'text-gray-300'}`}>
-                  {star <= Math.round(overallRating) ? "★" : "☆"}
-                </span>
-              ))}
-            </div>
-            <p className="mt-2 text-lg">Average: {overallRating.toFixed(2)} / 5</p>
-          </div>
+
           <div className="space-y-6">
             {reviews.map((review) => (
               <ReviewCard 
                 key={review.id}
                 user={review.user}
-                rating={parseInt(review.rating)}
+                rating={parseFloat(review.rating)}
                 comment={review.comment}
                 confidenceScore={review.confidenceScore}
                 onLike={() => handleRating(review.id, true)}
