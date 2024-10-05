@@ -102,7 +102,7 @@ export default function Home() {
           />
           <div className="flex justify-center mb-8">
             <BlurFade delay={0.8} duration={0.5} inView>
-              <Link href="/">
+              <Link href="/shop">
                 <PulsatingButton 
                   className="px-8 py-4 font-bold text-xl rounded-full hover:bg-purple-700 transition duration-300 transform hover:scale-105"
                   pulseColor="rgba(147, 51, 234, 0.5)"

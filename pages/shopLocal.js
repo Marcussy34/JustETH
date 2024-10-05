@@ -5,8 +5,8 @@ import { idlFactory } from '../counter/declarations/counter_backend/counter_back
 import RateRestaurant from '../components/RateRestaurant';
 import Footer from '../components/Footer';
 
-const MAINNET_IC_URL = "https://ic0.app";  // Updated for IC mainnet
-const CANISTER_ID = "6cuhh-6iaaa-aaaag-qm52q-cai";  // Replace with your mainnet canister ID
+const LOCAL_IC_URL = "http://127.0.0.1:4943";
+const CANISTER_ID = "by6od-j4aaa-aaaaa-qaadq-cai";
 
 export default function RateRestaurants({ isWalletConnected }) {
   const [stores, setStores] = useState([]);
@@ -20,8 +20,8 @@ export default function RateRestaurants({ isWalletConnected }) {
 
   const initActor = async () => {
     try {
-      const agent = new HttpAgent({ host: MAINNET_IC_URL });
-      // For production, there's no need to call `fetchRootKey`
+      const agent = new HttpAgent({ host: LOCAL_IC_URL });
+      await agent.fetchRootKey();
       
       const actor = Actor.createActor(idlFactory, {
         agent,
@@ -66,7 +66,7 @@ export default function RateRestaurants({ isWalletConnected }) {
 
       <main className="flex-grow pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-extrabold text-white mb-12 text-center animate-bounce">
-          30% Off on your first order! *T&C Apply
+         30% Off on your first order! *T&C Apply
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
