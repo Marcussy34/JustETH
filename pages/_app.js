@@ -11,7 +11,6 @@ function MyApp({ Component, pageProps }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThirdwebProvider
-        activeChain="ethereum"
         clientId={process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID}
         queryClient={queryClient}
       >

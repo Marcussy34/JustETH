@@ -35,9 +35,8 @@ const Particles = ({ className = "", quantity = 125, ease = 50, color = "#ffffff
   const canvasRef = useRef(null);
   const context = useRef(null);
   const mousePosition = useMousePosition();
-  const [dpr, setDpr] = useState(1);
+  const [dpr, setDpr] = useState(1);  // Keep only this declaration
   const particles = useRef([]);
-  const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
