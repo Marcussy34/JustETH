@@ -5,7 +5,9 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import WordPullUp from "../components/magicui/WordPullUp";
 import BlurFade from "../components/magicui/BlurFade";
+import PulsatingButton from "../components/magicui/PulsatingButton";
 import { useAddress } from "@thirdweb-dev/react";
+import UserOnboardingFlow from '../components/UserOnboardingFlow';
 
 const RestaurantCard = ({ name, image, category }) => (
   <div className="bg-white bg-opacity-20 p-4 rounded-lg shadow-lg text-center transform hover:scale-105 transition duration-300">
@@ -27,6 +29,46 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const address = useAddress();
+  const [previousAddress, setPreviousAddress] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userPreferences, setUserPreferences] = useState(null);
+  const [resetKey, setResetKey] = useState(0); // State to reset onboarding flow
+
+  // Load preferences from localStorage when the component mounts
+  useEffect(() => {
+    const storedPreferences = localStorage.getItem('userPreferences');
+    if (storedPreferences) {
+      setUserPreferences(JSON.parse(storedPreferences));
+    }
+  }, []);
+
+  // Handle wallet address changes
+  useEffect(() => {
+    if (!address && previousAddress) {
+      // Wallet was disconnected
+      localStorage.removeItem('userPreferences');
+      localStorage.removeItem('onboardingComplete');
+      setUserPreferences(null);
+      setResetKey(resetKey + 1); // Update resetKey to reset onboarding flow
+    }
+    // Update previousAddress state to track address changes
+    setPreviousAddress(address);
+  }, [address, previousAddress]);
+
+  // Show onboarding if the user is connected and hasn't completed onboarding
+  useEffect(() => {
+    if (address && !userPreferences && !localStorage.getItem('onboardingComplete')) {
+      setShowOnboarding(true);
+    }
+  }, [address, userPreferences]);
+
+  const handleOnboardingComplete = (preferences, spendingRange) => {
+    const userData = { preferences, spendingRange };
+    setUserPreferences(userData);
+    localStorage.setItem('userPreferences', JSON.stringify(userData)); // Save preferences to local storage
+    localStorage.setItem('onboardingComplete', 'true'); // Flag to indicate onboarding is complete
+    setShowOnboarding(false);
+  };
 
   const filteredRestaurants = trendingRestaurants.filter(restaurant => 
     restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -57,9 +99,13 @@ export default function Home() {
           <div className="flex justify-center mb-8">
             <BlurFade delay={0.8} duration={0.5} inView>
               <Link href="/">
-                <button className="px-8 py-4 bg-white text-purple-600 font-bold text-xl rounded-full hover:bg-purple-100 transition duration-300 transform hover:scale-105 animate-pulse">
+                <PulsatingButton 
+                  className="px-8 py-4 font-bold text-xl rounded-full hover:bg-purple-700 transition duration-300 transform hover:scale-105"
+                  pulseColor="rgba(147, 51, 234, 0.5)"
+                  duration="2s"
+                >
                   Begin Your Order!
-                </button>
+                </PulsatingButton>
               </Link>
             </BlurFade>
           </div>
@@ -121,6 +167,13 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      <UserOnboardingFlow
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={handleOnboardingComplete}
+        resetKey={resetKey} // Pass the resetKey prop to reset onboarding flow
+      />
     </div>
   );
 }
