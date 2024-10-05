@@ -1,6 +1,7 @@
-import { useRouter } from 'next/router'
-import Head from 'next/head'
-import FoodCard from '../../components/FoodCard'
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import FoodCard from '../../components/FoodCard';
+import Footer from '../../components/Footer'; // Import the Footer component
 
 const menuItems = {
   'uncle-rogers-fuiyoh': [
@@ -21,29 +22,22 @@ const menuItems = {
 };
 
 export default function RestaurantMenu() {
-  const router = useRouter()
-  const { restaurantSlug } = router.query
-
-  console.log('Restaurant Slug:', restaurantSlug);
+  const router = useRouter();
+  const { restaurantSlug } = router.query;
 
   // Remove the apostrophe from the slug to match the menuItems object keys
   const cleanSlug = restaurantSlug?.replace(/'/g, '');
-  console.log('Clean Slug:', cleanSlug);
-
   const restaurantName = cleanSlug?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Restaurant';
   const menu = menuItems[cleanSlug] || [];
 
-  console.log('Restaurant Name:', restaurantName);
-  console.log('Menu Items:', menu);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
       <Head>
         <title>{`${restaurantName} - Menu`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-extrabold text-white mb-12 text-center">
           {restaurantName} Menu
         </h1>
@@ -58,6 +52,9 @@ export default function RestaurantMenu() {
           <p className="text-white text-center text-xl">No menu items available. (Slug: {cleanSlug})</p>
         )}
       </main>
+
+      {/* Add Footer component here */}
+      <Footer />
     </div>
-  )
+  );
 }

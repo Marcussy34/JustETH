@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import RateRestaurant from '../components/RateRestaurant'
+import Footer from '../components/Footer'  // Add this import
 
 const restaurants = [
   { name: "Uncle Roger's Fuiyoh", averageRating: 4.5, totalRatings: 30, cuisine: "Asian Fusion", image: "/images/uncleroger.jpg" },
@@ -20,15 +21,15 @@ export default function RateRestaurants({ isWalletConnected }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
       <Head>
         <title>Web3 Food Rating System - Rate Restaurants</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-extrabold text-white mb-12 text-center animate-bounce">
-         Order from these restaurants
+         30% Off on your first order! *T&C Apply
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -37,6 +38,8 @@ export default function RateRestaurants({ isWalletConnected }) {
           ))}
         </div>
       </main>
+
+      <Footer />
     </div>
   )
 }
