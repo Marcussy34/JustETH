@@ -9,6 +9,7 @@ import PulsatingButton from "../components/magicui/PulsatingButton";
 import { useAddress } from "@thirdweb-dev/react";
 import UserOnboardingFlow from '../components/UserOnboardingFlow';
 import Particles from "../components/magicui/Particles";
+import AIOracleChatbot from '@/components/Chatbot';
 
 const RestaurantCard = ({ name, image, category }) => (
   <div className="bg-white bg-opacity-20 p-4 rounded-lg shadow-lg text-center transform hover:scale-105 transition duration-300">
@@ -87,7 +88,7 @@ export default function Home() {
       </Head>
 
       <Navbar />
-
+      <AIOracleChatbot/>
       <main className="flex-grow pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-12 text-center">
           <WordPullUp

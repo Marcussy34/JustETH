@@ -4,6 +4,7 @@ import { Actor, HttpAgent } from '@dfinity/agent';
 import { idlFactory } from '../counter/declarations/counter_backend/counter_backend.did.js';
 import RateRestaurant from '../components/RateRestaurant';
 import Footer from '../components/Footer';
+import AIOracleChatbot from '@/components/Chatbot.js';
 
 const LOCAL_IC_URL = "http://127.0.0.1:4943";
 const CANISTER_ID = "by6od-j4aaa-aaaaa-qaadq-cai";
@@ -63,7 +64,7 @@ export default function RateRestaurants({ isWalletConnected }) {
         <title>Web3 Food Rating System - Rate Restaurants</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      <AIOracleChatbot/>
       <main className="flex-grow pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-extrabold text-white mb-12 text-center animate-bounce">
          30% Off on your first order! *T&C Apply
