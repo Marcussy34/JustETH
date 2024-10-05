@@ -1,23 +1,13 @@
 import Head from 'next/head'
 import RateRestaurant from '../components/RateRestaurant'
-import { useState } from 'react'
-import { IDKitWidget, VerificationLevel } from "@worldcoin/idkit";
 
 const restaurants = [
-  { name: "Uncle Roger's Fuiyoh", rating: 4.5, cuisine: "Asian Fusion", image: "/images/uncle-roger.jpg" },
-  { name: "Jamie Oliver's", rating: 3.8, cuisine: "British", image: "/images/jamie-oliver.jpg" },
-  { name: "Gordon Ramsay's", rating: 4.2, cuisine: "Fine Dining", image: "/images/gordon-ramsay.jpg" },
+  { name: "Uncle Roger's Fuiyoh", averageRating: 4.5, totalRatings: 30, cuisine: "Asian Fusion", image: "/images/uncleroger.jpg" },
+  { name: "Jamie Oliver's", averageRating: 3.8, totalRatings: 45, cuisine: "British", image: "/images/jamie-oliver.jpg" },
+  { name: "Gordon Ramsay's", averageRating: 4.2, totalRatings: 60, cuisine: "Fine Dining", image: "/images/gordon-ramsay.jpg" },
 ];
 
 export default function RateRestaurants({ isWalletConnected }) {
-  const [ratings, setRatings] = useState({});
-
-  const handleRate = (restaurantName, rating) => {
-    setRatings(prev => ({ ...prev, [restaurantName]: rating }));
-    // Here you would typically send this rating to your backend or smart contract
-    console.log(`Rated ${restaurantName} with ${rating} stars`);
-  };
-
   if (!isWalletConnected) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center">
@@ -38,18 +28,12 @@ export default function RateRestaurants({ isWalletConnected }) {
 
       <main className="pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-extrabold text-white mb-12 text-center animate-bounce">
-          Rate These Restaurants
+         Order from these restaurants
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {restaurants.map((restaurant, index) => (
-            restaurant && restaurant.name ? (
-              <RateRestaurant
-                key={index}
-                restaurant={restaurant}
-                onRate={handleRate}
-              />
-            ) : null
+            <RateRestaurant key={index} restaurant={restaurant} />
           ))}
         </div>
       </main>

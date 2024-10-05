@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'Arial', 'Helvetica', 'sans-serif'],
+      },
       animation: {
         bounce: 'bounce 1s infinite',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -30,4 +33,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};

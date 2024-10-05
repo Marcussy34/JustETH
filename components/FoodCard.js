@@ -1,25 +1,21 @@
-// components/FoodCard.js
-import { Star } from 'lucide-react'
+import React from 'react';
+import Link from 'next/link';
 
-export default function FoodCard({ name, rating }) {
+export default function FoodCard({ name, price, image, restaurantSlug }) {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">{name}</h3>
-        <div className="mt-2 max-w-xl text-sm text-gray-500">
-          <div className="flex items-center">
-            <Star className="text-yellow-400" size={20} />
-            <span className="ml-1">{rating.toFixed(1)}</span>
-          </div>
-        </div>
-      </div>
-      <div className="px-4 py-4 sm:px-6">
-        <button
-          type="button"
-          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Rate this restaurant
-        </button>
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition duration-300">
+      <img src={image} alt={name} className="w-full h-48 object-cover" />
+      <div className="p-4">
+        <h3 className="text-xl font-bold text-gray-800 mb-2">{name}</h3>
+        <p className="text-gray-600 mb-4">${price.toFixed(2)}</p>
+        <Link href={`/payment/${restaurantSlug}/${encodeURIComponent(name)}`}>
+          <button
+            type="button"
+            className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
+          >
+            Buy
+          </button>
+        </Link>
       </div>
     </div>
   )

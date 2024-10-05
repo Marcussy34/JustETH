@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ThirdwebProvider, useAddress } from "@thirdweb-dev/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Navbar from '../components/Navbar';
+import { ThemeProvider } from '../components/ThemeProvider';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
@@ -14,7 +15,9 @@ function MyApp({ Component, pageProps }) {
         clientId={process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID}
         queryClient={queryClient}
       >
-        <WalletWrapper Component={Component} pageProps={pageProps} />
+        <ThemeProvider>
+          <WalletWrapper Component={Component} pageProps={pageProps} />
+        </ThemeProvider>
       </ThirdwebProvider>
     </QueryClientProvider>
   );
