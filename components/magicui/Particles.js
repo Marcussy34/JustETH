@@ -6,15 +6,17 @@ function useMousePosition() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (event) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
+    if (typeof window !== "undefined") {
+      const handleMouseMove = (event) => {
+        setMousePosition({ x: event.clientX, y: event.clientY });
+      };
 
-    window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mousemove", handleMouseMove);
 
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
+      return () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+      };
+    }
   }, []);
 
   return mousePosition;
@@ -33,22 +35,24 @@ const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff
   const canvasRef = useRef(null);
   const context = useRef(null);
   const mousePosition = useMousePosition();
-  const dpr = window.devicePixelRatio || 1;
   const particles = useRef([]);
+  const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      context.current = canvas.getContext("2d");
-    }
-    initCanvas();
-    createParticles();
-    animate();
-    window.addEventListener("resize", initCanvas);
+    if (typeof window !== "undefined") {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        context.current = canvas.getContext("2d");
+      }
+      initCanvas();
+      createParticles();
+      animate();
+      window.addEventListener("resize", initCanvas);
 
-    return () => {
-      window.removeEventListener("resize", initCanvas);
-    };
+      return () => {
+        window.removeEventListener("resize", initCanvas);
+      };
+    }
   }, [color]);
 
   const initCanvas = () => {

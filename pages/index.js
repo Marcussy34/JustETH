@@ -1,14 +1,47 @@
-import Head from 'next/head'
-import RateRestaurant from '../components/RateRestaurant'
-import Footer from '../components/Footer'  // Add this import
+import { useState, useEffect } from 'react';
+import Head from 'next/head';
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { idlFactory } from '../counter/declarations/counter_backend/counter_backend.did.js';
+import RateRestaurant from '../components/RateRestaurant';
+import Footer from '../components/Footer';
 
-const restaurants = [
-  { name: "Uncle Roger's Fuiyoh", averageRating: 4.5, totalRatings: 30, cuisine: "Asian Fusion", image: "/images/uncleroger.jpg" },
-  { name: "Jamie Oliver's", averageRating: 3.8, totalRatings: 45, cuisine: "British", image: "/images/jamie-oliver.jpg" },
-  { name: "Gordon Ramsay's", averageRating: 4.2, totalRatings: 60, cuisine: "Fine Dining", image: "/images/gordon-ramsay.jpg" },
-];
+const LOCAL_IC_URL = "http://127.0.0.1:4943";
+const CANISTER_ID = "by6od-j4aaa-aaaaa-qaadq-cai";
 
 export default function RateRestaurants({ isWalletConnected }) {
+  const [stores, setStores] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (isWalletConnected) {
+      initActor();
+    }
+  }, [isWalletConnected]);
+
+  const initActor = async () => {
+    try {
+      const agent = new HttpAgent({ host: LOCAL_IC_URL });
+      await agent.fetchRootKey();
+      
+      const actor = Actor.createActor(idlFactory, {
+        agent,
+        canisterId: CANISTER_ID,
+      });
+      await fetchAllStores(actor);
+    } catch (err) {
+      setError(`Failed to initialize actor: ${err.message}`);
+    }
+  };
+
+  const fetchAllStores = async (actor) => {
+    try {
+      const allStores = await actor.getAllStores();
+      setStores(allStores);
+    } catch (err) {
+      setError(`Failed to fetch stores: ${err.message}`);
+    }
+  };
+
   if (!isWalletConnected) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center">
@@ -18,6 +51,10 @@ export default function RateRestaurants({ isWalletConnected }) {
         </div>
       </div>
     );
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center">{error}</div>;
   }
 
   return (
@@ -33,13 +70,13 @@ export default function RateRestaurants({ isWalletConnected }) {
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {restaurants.map((restaurant, index) => (
-            <RateRestaurant key={index} restaurant={restaurant} />
+          {stores.map((store, index) => (
+            <RateRestaurant key={index} restaurant={store} index={index} />
           ))}
         </div>
       </main>
 
       <Footer />
     </div>
-  )
+  );
 }

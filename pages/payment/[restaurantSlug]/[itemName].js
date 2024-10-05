@@ -17,8 +17,8 @@ export default function PaymentPage() {
   const address = useAddress();
   const sdk = useSDK();
 
-  const price = 17.99;
-  const restaurant = "Uncle Roger's Fuiyoh";
+  const price = 0.001;
+  const restaurant = "Delicious Food";
 
   useEffect(() => {
     if (!address) {
@@ -76,7 +76,7 @@ export default function PaymentPage() {
                 <Image src="/images/eggfriedrice.jpg" alt={itemName} width={200} height={200} className="rounded-lg" />
               </div>
               <h2 className="text-xl font-semibold mb-2 text-gray-800">{itemName}</h2>
-              <p className="text-lg mb-2 text-gray-800">Price: ${price}</p>
+              <p className="text-lg mb-2 text-gray-800">Price: {price} ETH</p>
               <p className="text-gray-800 mb-4">Restaurant: {restaurant}</p>
               <button 
                 onClick={() => setShowConfirmation(true)} 
@@ -101,7 +101,7 @@ export default function PaymentPage() {
             {paymentStatus === '' && (
               <>
                 <h2 className="text-xl font-bold mb-4 text-gray-800">Confirm Payment</h2>
-                <p className="text-gray-800 mb-4">Are you sure you want to pay ${price} for {itemName}?</p>
+                <p className="text-gray-800 mb-4">Are you sure you want to pay {price} ETH for {itemName}?</p>
                 <div className="mt-4 flex justify-end space-x-2">
                   <button 
                     onClick={() => setShowConfirmation(false)} 
