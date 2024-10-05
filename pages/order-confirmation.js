@@ -9,49 +9,52 @@ import { ethers } from 'ethers';
 import PromptABI from './abi/commentabi.json';
 import { Spinner } from "@nextui-org/spinner";
 
+import { ContractABI, contractAddress } from '../utils/constants';
+
 export default function OrderConfirmation() {
   const router = useRouter();
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(0);
-  const [contract, setContract] = useState(null);
+  const [aiContract, setAiContract] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
   const [evaluationLoading, setEvaluationLoading] = useState(false);
   const [submissionLoading, setSubmissionLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const initContract = async () => {
+    const initAiContract = async () => {
       try {
         const provider = new ethers.providers.JsonRpcProvider('https://opt-sepolia.g.alchemy.com/v2/2iPF_MT9jp-O4mQ0eWd1HpeamV3zWWt4');
         const privateKey = '28f88112e577b6a15dde9fb7868fcd01954f7ccc02c61797d664db7a9a4e0f5a';
         const signer = new ethers.Wallet(privateKey, provider);
-        const contractAddress = '0x1C21be151F96aFC8Db713F2d1D631fd163ea06ac';
-        const contract = new ethers.Contract(contractAddress, PromptABI, signer);
-        setContract(contract);
+        const aiContractAddress = '0x1C21be151F96aFC8Db713F2d1D631fd163ea06ac';
+        const contract = new ethers.Contract(aiContractAddress, PromptABI, signer);
+        setAiContract(contract);
       } catch (error) {
-        console.error('Error initializing contract:', error);
-        toast.error('Failed to initialize contract');
+        console.error('Error initializing AI contract:', error);
+        toast.error('Failed to initialize AI contract');
       }
     };
 
-    initContract();
+    initAiContract();
   }, []);
 
   useEffect(() => {
-    if (contract) {
-      contract.on('commentEvaluation', (requestId, modelId, input, output, callbackData) => {
+    if (aiContract) {
+      aiContract.on('commentEvaluation', (requestId, modelId, input, output, callbackData) => {
         setEvaluation(parseInt(output));
         setEvaluationLoading(false);
       });
 
       return () => {
-        contract.removeAllListeners('commentEvaluation');
+        aiContract.removeAllListeners('commentEvaluation');
       };
     }
-  }, [contract]);
+  }, [aiContract]);
 
   useEffect(() => {
     const evaluateComment = async () => {
-      if (!contract || !review.trim() || evaluationLoading) return;
+      if (!aiContract || !review.trim() || evaluationLoading) return;
 
       setEvaluationLoading(true);
       setEvaluation(null); // Reset evaluation when starting new evaluation
@@ -61,9 +64,9 @@ export default function OrderConfirmation() {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         const modelId = 11;
-        const estimatedFee = await contract.estimateFee(modelId);
+        const estimatedFee = await aiContract.estimateFee(modelId);
 
-        const tx = await contract.evaluateComment(modelId, review, {
+        const tx = await aiContract.evaluateComment(modelId, review, {
           value: estimatedFee,
           gasLimit: ethers.utils.hexlify(3000000),
           gasPrice: ethers.utils.parseUnits('20', 'gwei')
@@ -84,27 +87,44 @@ export default function OrderConfirmation() {
     }, 500);
 
     return () => clearTimeout(debounce);
-  }, [review, contract]);
+  }, [review, aiContract]);
 
   const handleReviewSubmit = async (verified) => {
-    if (verified) {
-      setSubmissionLoading(true);
-      try {
-        // Simulating a transaction delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        console.log('Submitting review:', { review, rating });
-        toast.success('Review submitted successfully!', {
-          autoClose: 1000,
-          onClose: () => router.push('/reviews')
-        });
-      } catch (error) {
-        toast.error('Failed to submit review. Please try again.');
-      } finally {
-        setSubmissionLoading(false);
-      }
-    } else {
+    if (!verified) {
       toast.error('WorldID verification failed. Please try again.');
+      return;
+    }
+
+    if (!window.ethereum) {
+      setError("Please install MetaMask to use this feature.");
+      return;
+    }
+
+    setSubmissionLoading(true);
+    setError(null);
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, ContractABI, signer);
+
+      console.log('Submitting review:', { rating, review, evaluation });
+      const transaction = await contract.submitReview(rating, review, evaluation);
+      console.log('Transaction sent:', transaction.hash);
+
+      const receipt = await transaction.wait();
+      console.log('Transaction confirmed:', receipt.transactionHash);
+
+      toast.success('Review submitted successfully!', {
+        autoClose: 1000,
+        onClose: () => router.push('/reviews')
+      });
+    } catch (err) {
+      console.error("Error submitting review:", err);
+      setError(`Failed to submit review: ${err.message}`);
+      toast.error(`Failed to submit review: ${err.message}`);
+    } finally {
+      setSubmissionLoading(false);
     }
   };
 
@@ -112,7 +132,7 @@ export default function OrderConfirmation() {
     if (evaluationLoading) {
       return (
         <div className="flex items-center justify-center h-8">
-          <Spinner // Updated Spinner usage
+          <Spinner
             size="md"
             color="primary"
           />
@@ -134,6 +154,8 @@ export default function OrderConfirmation() {
           <h1 className="text-2xl font-bold mb-4 text-gray-800">Thank you for your order!</h1>
           <p className="mb-4 text-gray-700">We hope you enjoy your meal. Would you like to leave a review?</p>
           
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+
           <div className="mb-4 p-4 bg-blue-100 rounded-lg">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">Review Confidence Score:</p>
@@ -173,42 +195,42 @@ export default function OrderConfirmation() {
           </div>
 
           <IDKitWidget
-        action={process.env.NEXT_PUBLIC_WLD_ACTION || "food-rating"}
-        signal="user-review"
-        onSuccess={() => handleReviewSubmit(true)}
-        onError={() => handleReviewSubmit(false)}
-        app_id={process.env.NEXT_PUBLIC_WLD_APP_ID}
-      >
-        {({ open }) => (
-          <button
-            onClick={open}
-            className={`w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center ${
-              (evaluationLoading || submissionLoading) ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            disabled={evaluationLoading || submissionLoading}
+            action={process.env.NEXT_PUBLIC_WLD_ACTION || "food-rating"}
+            signal="user-review"
+            onSuccess={() => handleReviewSubmit(true)}
+            onError={() => handleReviewSubmit(false)}
+            app_id={process.env.NEXT_PUBLIC_WLD_APP_ID}
           >
-            {submissionLoading || evaluationLoading ? (
-              <>
-                <Spinner // Updated Spinner usage
-                  size="sm"
-                  color="white"
-                  className="mr-2"
-                />
-                {submissionLoading ? 'Submitting...' : 'Evaluating...'}
-              </>
-            ) : (
-              'Submit Review with WorldID'
+            {({ open }) => (
+              <button
+                onClick={open}
+                className={`w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center ${
+                  (evaluationLoading || submissionLoading || !window.ethereum) ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                disabled={evaluationLoading || submissionLoading || !window.ethereum}
+              >
+                {submissionLoading || evaluationLoading ? (
+                  <>
+                    <Spinner
+                      size="sm"
+                      color="white"
+                      className="mr-2"
+                    />
+                    {submissionLoading ? 'Submitting...' : 'Evaluating...'}
+                  </>
+                ) : (
+                  'Submit Review with WorldID'
+                )}
+              </button>
             )}
-          </button>
-        )}
-      </IDKitWidget>
+          </IDKitWidget>
           <p className="mt-2 text-sm text-gray-600">
             We use WorldID to ensure reviews are authentic and not generated by bots.{' '}
             <span className="text-blue-500 underline cursor-pointer">
               Read more
             </span>
           </p>
-          </div>
+        </div>
       </main>
       
       <ToastContainer position="top-center" />

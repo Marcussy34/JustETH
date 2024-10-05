@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAddress, useChainId, useWallet, useSDK } from "@thirdweb-dev/react";
-import { contractABI, contractAddress } from '../utils/constants';
+import { ContractABI, contractAddress } from '../utils/constants';
 import { ethers } from 'ethers';
 
 const cuisineOptions = [
@@ -73,7 +73,7 @@ const UserOnboardingFlow = ({ isOpen, onClose, onComplete }) => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const contract = new ethers.Contract(contractAddress, ContractABI, signer);
 
       const preferencesString = [...preferences, spendingRange].join(',');
       console.log("Submitting preferences to contract:", preferencesString);
