@@ -1,4 +1,3 @@
-// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,9 +6,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'Arial', 'Helvetica', 'sans-serif'],
+      },
       animation: {
         bounce: 'bounce 1s infinite',
-        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        pulse: 'pulse var(--duration, 2s) cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         bounce: {
@@ -23,11 +25,17 @@ module.exports = {
           },
         },
         pulse: {
-          '0%, 100%': { opacity: 1 },
-          '50%': { opacity: .5 },
+          '0%, 100%': { 
+            opacity: 1,
+            boxShadow: '0 0 0 0 var(--pulse-color, rgba(147, 51, 234, 0.5))'
+          },
+          '50%': { 
+            opacity: .5,
+            boxShadow: '0 0 0 8px var(--pulse-color, rgba(147, 51, 234, 0.5))'
+          },
         },
       },
     },
   },
   plugins: [],
-}
+};
