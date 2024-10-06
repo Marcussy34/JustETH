@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useAddress, useChainId, useWallet, useSDK } from "@thirdweb-dev/react";
+import { ContractABI, contractAddress } from '../utils/constants';
+import { ethers } from 'ethers';
 
 const cuisineOptions = [
   { name: 'Italian', icon: '🍝' },
@@ -18,19 +21,27 @@ const spendingRanges = [
   { label: '$50+ (Fine Dining)', value: 'fine-dining' },
 ];
 
-const UserOnboardingFlow = ({ isOpen, onClose, onComplete, resetKey }) => {
+const UserOnboardingFlow = ({ isOpen, onClose, onComplete }) => {
   const [step, setStep] = useState(1);
   const [preferences, setPreferences] = useState([]);
   const [spendingRange, setSpendingRange] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Reset the state when resetKey changes
+  const address = useAddress();
+  const chainId = useChainId();
+  const wallet = useWallet();
+  const sdk = useSDK();
+
   useEffect(() => {
-    if (isOpen) {
-      setStep(1);
-      setPreferences([]);
-      setSpendingRange('');
+    if (!address) {
+      setError("Please connect your wallet to continue.");
+      console.log("Wallet not connected");
+    } else {
+      setError(null);
+      console.log("Wallet connected:", address);
     }
-  }, [resetKey, isOpen]);
+  }, [address]);
 
   if (!isOpen) return null;
 
@@ -38,27 +49,60 @@ const UserOnboardingFlow = ({ isOpen, onClose, onComplete, resetKey }) => {
     setPreferences(prev =>
       prev.includes(cuisine) ? prev.filter(p => p !== cuisine) : [...prev, cuisine]
     );
+    console.log("Current preferences:", preferences);
   };
 
-  const handleNext = () => setStep(prev => prev + 1);
-
-  const handleSubmit = () => {
-    setStep(3); // Move to the thank you step instead of closing
+  const handleNext = () => {
+    if (preferences.length < 3) {
+      setError("Please select at least 3 preferences.");
+      return;
+    }
+    setStep(prev => prev + 1);
+    setError(null);
   };
 
-  const handleFinish = () => {
-    onComplete(preferences, spendingRange);
-    onClose();
+  const handleSubmit = async () => {
+    if (!window.ethereum) {
+      setError("Please install MetaMask to use this feature.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, ContractABI, signer);
+
+      const preferencesString = [...preferences, spendingRange].join(',');
+      console.log("Submitting preferences to contract:", preferencesString);
+
+      const transaction = await contract.setUserPreferences(preferencesString);
+      console.log("Transaction sent:", transaction.hash);
+
+      const receipt = await transaction.wait();
+      console.log("Transaction confirmed:", receipt.transactionHash);
+
+      console.log("Preferences saved to smart contract");
+      onComplete(preferences, spendingRange);
+      onClose();
+    } catch (err) {
+      console.error("Error saving preferences to smart contract:", err);
+      setError("Failed to save preferences. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg max-w-3xl w-full">
-        {step < 3 && (
-          <p className="text-2xl font-bold mb-6 text-black">
-            Welcome! Let's get to know your food preferences to customize your experience.
-          </p>
-        )}
+        <p className="text-2xl font-bold mb-6 text-black">
+          Let's set your food preferences to customize your experience.
+        </p>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
         {step === 1 && (
           <>
@@ -68,11 +112,10 @@ const UserOnboardingFlow = ({ isOpen, onClose, onComplete, resetKey }) => {
                 <button
                   key={cuisine.name}
                   onClick={() => handlePreferenceChange(cuisine.name)}
-                  className={`flex flex-col items-center justify-center p-4 rounded-full transition-all ${
-                    preferences.includes(cuisine.name) 
-                      ? 'bg-purple-600 text-white' 
+                  className={`flex flex-col items-center justify-center p-4 rounded-full transition-all ${preferences.includes(cuisine.name)
+                      ? 'bg-purple-600 text-white'
                       : 'bg-gray-200 text-black hover:bg-gray-300'
-                  }`}
+                    }`}
                 >
                   <span className="text-4xl mb-2">{cuisine.icon}</span>
                   <span className="text-sm">{cuisine.name}</span>
@@ -81,7 +124,7 @@ const UserOnboardingFlow = ({ isOpen, onClose, onComplete, resetKey }) => {
             </div>
             <button
               onClick={handleNext}
-              disabled={preferences.length === 0}
+              disabled={preferences.length < 3}
               className="mt-4 bg-purple-600 text-white px-6 py-3 rounded-full text-lg font-semibold disabled:opacity-50 hover:bg-purple-700 transition-colors"
             >
               Next
@@ -106,25 +149,12 @@ const UserOnboardingFlow = ({ isOpen, onClose, onComplete, resetKey }) => {
             ))}
             <button
               onClick={handleSubmit}
-              disabled={!spendingRange}
+              disabled={!spendingRange || isLoading || !address}
               className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-full text-lg font-semibold disabled:opacity-50 hover:bg-purple-700 transition-colors"
             >
-              Submit
+              {isLoading ? "Saving..." : "Submit"}
             </button>
           </>
-        )}
-
-        {step === 3 && (
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4 text-black">Thank you for your input!</h2>
-            <p className="text-lg mb-8 text-black">We're excited to customize your experience based on your preferences.</p>
-            <button
-              onClick={handleFinish}
-              className="bg-purple-600 text-white px-6 py-3 rounded-full text-lg font-semibold hover:bg-purple-700 transition-colors"
-            >
-              Let's go!
-            </button>
-          </div>
         )}
       </div>
     </div>

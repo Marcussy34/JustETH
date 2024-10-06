@@ -1,39 +1,43 @@
-// components/RateRestaurant.js
 import React from 'react';
 import Link from 'next/link';
 import StarRating from './StarRating';
 import BlurFade from '../components/magicui/BlurFade';
 
 const RateRestaurant = ({ restaurant, index }) => {
-  const { name, cuisine, image, averageRating, totalRatings } = restaurant;
-  const restaurantSlug = name.toLowerCase().replace(/\s+/g, '-');
+  const { name, imageUrl, rating } = restaurant;
+  
+  // Create a URL-friendly slug
+  const restaurantSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  // Convert rating to a number and handle potential NaN
+  const numericRating = Number(rating);
+  const displayRating = !isNaN(numericRating) ? numericRating.toFixed(1) : 'N/A';
 
   return (
-    <BlurFade delay={0.25 + index * 0.1} inView>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition duration-300">
-        {image && (
-          <img src={image} alt={name} className="w-full h-48 object-cover" />
+    <BlurFade delay={index * 0.1}>
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {imageUrl && (
+          <img src={imageUrl} alt={name} className="w-full h-48 object-cover" />
         )}
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">{name}</h2>
-          {cuisine && <p className="text-gray-600 mb-4">{cuisine}</p>}
+        <div className="p-4">
+          <h2 className="text-xl font-semibold mb-2">{name}</h2>
           
           {/* Render the star rating */}
           <div className="flex items-center mb-4">
-            <StarRating rating={averageRating} />
-            <span className="ml-2 text-lg font-semibold text-gray-800 bg-white px-2 py-1 rounded-md shadow-sm">
-              {averageRating.toFixed(1)}/5 ({totalRatings})
+            <StarRating rating={numericRating} />
+            <span className="ml-2 text-gray-600">
+              {displayRating}/5
             </span>
           </div>
-          
-          <div className="flex space-x-4">
-            <Link href={`/menu/${restaurantSlug}`}>
-              <button className="flex-1 bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
+
+          <div className="flex justify-between">
+            <Link href={`/menu/${restaurantSlug}`} passHref>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
                 Order
               </button>
             </Link>
-            <Link href={`/ratings/${restaurantSlug}`}>
-              <button className="flex-1 bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 transition duration-300">
+            <Link href="/reviews" passHref>
+              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
                 View Ratings
               </button>
             </Link>

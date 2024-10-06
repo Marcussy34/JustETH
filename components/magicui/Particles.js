@@ -6,15 +6,17 @@ function useMousePosition() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (event) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
+    if (typeof window !== 'undefined') {
+      const handleMouseMove = (event) => {
+        setMousePosition({ x: event.clientX, y: event.clientY });
+      };
 
-    window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mousemove", handleMouseMove);
 
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
+      return () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+      };
+    }
   }, []);
 
   return mousePosition;
@@ -29,30 +31,36 @@ function hexToRgb(hex) {
   return [r, g, b];
 }
 
-const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff" }) => {
+const Particles = ({ className = "", quantity = 125, ease = 50, color = "#ffffff" }) => {
   const canvasRef = useRef(null);
   const context = useRef(null);
   const mousePosition = useMousePosition();
-  const dpr = window.devicePixelRatio || 1;
+  const [dpr, setDpr] = useState(1);  // Keep only this declaration
   const particles = useRef([]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      context.current = canvas.getContext("2d");
-    }
-    initCanvas();
-    createParticles();
-    animate();
-    window.addEventListener("resize", initCanvas);
+    if (typeof window !== 'undefined') {
+      setDpr(window.devicePixelRatio || 1);
 
-    return () => {
-      window.removeEventListener("resize", initCanvas);
-    };
+      const canvas = canvasRef.current;
+      if (canvas) {
+        context.current = canvas.getContext("2d");
+      }
+
+      initCanvas();
+      createParticles();
+      animate();
+
+      window.addEventListener("resize", initCanvas);
+
+      return () => {
+        window.removeEventListener("resize", initCanvas);
+      };
+    }
   }, [color]);
 
   const initCanvas = () => {
-    if (canvasRef.current && context.current) {
+    if (canvasRef.current && context.current && typeof window !== 'undefined') {
       const canvas = canvasRef.current;
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
@@ -60,30 +68,31 @@ const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff
     }
   };
 
-  // Create particles and store them in the particles array
   const createParticles = () => {
-    particles.current = [];
-    for (let i = 0; i < quantity; i++) {
-      particles.current.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        size: Math.random() * 5 + 1, // Size between 1 and 5
-        speedX: Math.random() * 2 - 1, // Speed between -1 and 1
-        speedY: Math.random() * 2 - 1, // Speed between -1 and 1
-        color: hexToRgb(color),
-      });
+    if (typeof window !== 'undefined') {
+      particles.current = [];
+      for (let i = 0; i < quantity; i++) {
+        particles.current.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          size: Math.random() * 3 + 0.5, // Size between 0.5 and 3.5
+          speedX: Math.random() * 0.75 - 0.375, // Speed between -0.375 and 0.375
+          speedY: Math.random() * 0.75 - 0.375, // Speed between -0.375 and 0.375
+          color: hexToRgb(color),
+        });
+      }
     }
   };
 
   const drawParticles = () => {
-    if (!context.current) return;
+    if (!context.current || typeof window === 'undefined') return;
 
     context.current.clearRect(0, 0, window.innerWidth * dpr, window.innerHeight * dpr);
 
     particles.current.forEach((particle) => {
       context.current.beginPath();
       context.current.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-      context.current.fillStyle = `rgba(${particle.color[0]}, ${particle.color[1]}, ${particle.color[2]}, 0.7)`;
+      context.current.fillStyle = `rgba(${particle.color[0]}, ${particle.color[1]}, ${particle.color[2]}, 0.5)`; // Adjusted opacity
       context.current.fill();
       context.current.closePath();
 
@@ -101,10 +110,12 @@ const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff
 
   const animate = () => {
     drawParticles();
-    window.requestAnimationFrame(animate);
+    if (typeof window !== 'undefined') {
+      window.requestAnimationFrame(animate);
+    }
   };
 
-  return <canvas ref={canvasRef} className={`${className} w-full h-full`} />;
+  return <canvas ref={canvasRef} className={`${className} w-full h-full pointer-events-none absolute inset-0 z-0`} />;
 };
 
 export default Particles;

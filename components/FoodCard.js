@@ -7,7 +7,7 @@ export default function FoodCard({ name, price, image, restaurantSlug }) {
       <img src={image} alt={name} className="w-full h-48 object-cover" />
       <div className="p-4">
         <h3 className="text-xl font-bold text-gray-800 mb-2">{name}</h3>
-        <p className="text-gray-600 mb-4">${price.toFixed(2)}</p>
+        <p className="text-gray-600 mb-4">{price} ETH</p>
         <Link href={`/payment/${restaurantSlug}/${encodeURIComponent(name)}`}>
           <button
             type="button"
