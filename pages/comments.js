@@ -194,7 +194,7 @@ const CommentEvaluator = ({ isWalletConnected }) => {
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <div className="flex items-center space-x-4 mb-8">
             <img
-              src="/api/placeholder/64/64"
+              src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/df/b1/ae/chynna.jpg"
               alt="Delicious Food Restaurant"
               className="w-16 h-16 rounded-full object-cover"
             />
