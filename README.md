@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Verified Smart Contract on Scroll
+/contract
+This folder is for the smart contract on the Scroll network. You can view the verified smart contract on Scroll here: https://sepolia.scrollscan.com/address/0xE805a19Af341Eb244de25fb371f4fa826980D98f#code
 
-## Getting Started
+ICP Shop Listing
+/counter
+The /counter folder is the ICP (Internet Computer Protocol) folder for the shop listing smart contract, written in Mokoto. You can view the canister on mainnet here: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=6mwkp-fyaaa-aaaag-qm53q-cai
 
-First, run the development server:
+Subgraph API
+/food
+The /food folder contains the Subgraph deployed to query the Scroll smart contract. You can query it via The Graph API here: https://api.studio.thegraph.com/query/90400/food/version/latest
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Ora AI
+This section is related to the Ora AI.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+/pages/comments.js
+This page is linked to a deployed smart contract on Optimism Sepolia for an AI recommender system used in the dashboard. You can view the deployed smart contract here: https://optimism-sepolia.blockscout.com/address/0x3e24852a2B1f72C9DF94a957354F84ebd6F48ECD
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+/pages/order-confirmation.js
+This page is connected to a smart contract for sentiment analysis, deployed on Optimism Sepolia. You can view the deployed smart contract here: https://optimism-sepolia.blockscout.com/address/0x1C21be151F96aFC8Db713F2d1D631fd163ea06ac
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+/components/chatbot.js
+This component is tied to an AI recommender system smart contract for user interaction, deployed on Optimism Sepolia. You can view the deployed smart contract here: https://optimism-sepolia.blockscout.com/address/0xA29B7532F34f1b76aD9687d761a43Cc0Ee898951
