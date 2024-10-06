@@ -1,12 +1,15 @@
 Verified Smart Contract on Scroll
+
 /contract
 This folder is for the smart contract on the Scroll network. You can view the verified smart contract on Scroll here: https://sepolia.scrollscan.com/address/0xE805a19Af341Eb244de25fb371f4fa826980D98f#code
 
 ICP Shop Listing
+
 /counter
 The /counter folder is the ICP (Internet Computer Protocol) folder for the shop listing smart contract, written in Mokoto. You can view the canister on mainnet here: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=6mwkp-fyaaa-aaaag-qm53q-cai
 
 Subgraph API
+
 /food
 The /food folder contains the Subgraph deployed to query the Scroll smart contract. You can query it via The Graph API here: https://api.studio.thegraph.com/query/90400/food/version/latest
 
