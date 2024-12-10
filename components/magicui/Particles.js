@@ -29,14 +29,20 @@ function hexToRgb(hex) {
   return [r, g, b];
 }
 
-const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff" }) => {
+const Particles = ({
+  className = "",
+  quantity = 100,
+  ease = 50,
+  color = "#ffffff",
+}) => {
   const canvasRef = useRef(null);
   const context = useRef(null);
   const mousePosition = useMousePosition();
-  const dpr = window.devicePixelRatio || 1;
+  const [dpr, setDpr] = useState(1);
   const particles = useRef([]);
 
   useEffect(() => {
+    setDpr(window.devicePixelRatio || 1);
     const canvas = canvasRef.current;
     if (canvas) {
       context.current = canvas.getContext("2d");
@@ -60,16 +66,15 @@ const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff
     }
   };
 
-  // Create particles and store them in the particles array
   const createParticles = () => {
     particles.current = [];
     for (let i = 0; i < quantity; i++) {
       particles.current.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
-        size: Math.random() * 5 + 1, // Size between 1 and 5
-        speedX: Math.random() * 2 - 1, // Speed between -1 and 1
-        speedY: Math.random() * 2 - 1, // Speed between -1 and 1
+        size: Math.random() * 5 + 1,
+        speedX: Math.random() * 2 - 1,
+        speedY: Math.random() * 2 - 1,
         color: hexToRgb(color),
       });
     }
@@ -78,20 +83,29 @@ const Particles = ({ className = "", quantity = 100, ease = 50, color = "#ffffff
   const drawParticles = () => {
     if (!context.current) return;
 
-    context.current.clearRect(0, 0, window.innerWidth * dpr, window.innerHeight * dpr);
+    context.current.clearRect(
+      0,
+      0,
+      window.innerWidth * dpr,
+      window.innerHeight * dpr
+    );
 
     particles.current.forEach((particle) => {
       context.current.beginPath();
-      context.current.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      context.current.arc(
+        particle.x,
+        particle.y,
+        particle.size,
+        0,
+        Math.PI * 2
+      );
       context.current.fillStyle = `rgba(${particle.color[0]}, ${particle.color[1]}, ${particle.color[2]}, 0.7)`;
       context.current.fill();
       context.current.closePath();
 
-      // Update particle position
       particle.x += particle.speedX;
       particle.y += particle.speedY;
 
-      // Wrap around screen edges
       if (particle.x < 0) particle.x = window.innerWidth;
       if (particle.x > window.innerWidth) particle.x = 0;
       if (particle.y < 0) particle.y = window.innerHeight;
