@@ -4,10 +4,10 @@ import FoodCard from '../../components/FoodCard';
 import Footer from '../../components/Footer'; // Import the Footer component
 
 const menuItems = {
-  'uncle-rogers-fuiyoh': [
-    { name: 'Egg Fried Rice', price: 17.99, image: "/images/eggfriedrice.jpg" },
-    { name: 'Chilli Crab', price: 24.99, image: "/images/chilicrab.jpg" },
-    { name: 'Kimchi Fried Rice', price: 14.99, image: "/images/kimchifriedrice.jpg" },
+  'delicious-food': [
+    { name: 'Egg Fried Rice', price: 0.001, image: "/images/eggfriedrice.jpg" },
+    { name: 'Chilli Crab', price: 0.002, image: "/images/chilicrab.jpg" },
+    { name: 'Kimchi Fried Rice', price: 0.0015, image: "/images/kimchifriedrice.jpg" },
   ],
   'jamie-olivers': [
     { name: 'Fish and Chips', price: 15.99, image: '/api/placeholder/400/300' },
